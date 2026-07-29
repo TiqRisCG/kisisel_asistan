@@ -7,8 +7,8 @@ from groq import Groq
 
 app = FastAPI()
 
-# 🔑 Groq'tan aldığın gsk_... ile başlayan API Key'ini buraya yapıştır:
-GROQ_API_KEY = "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"
+# 🔐 API Key artık koda gömülü değil, çevre değişkeninden okunacak:
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
 client = Groq(api_key=GROQ_API_KEY)
 MEMORY_FILE = "memory.json"
@@ -55,7 +55,6 @@ def chat(request: ChatRequest):
 
     def generate_stream():
         full_response = ""
-        # Groq Llama 3.3 70B - Dünyanın en hızlı yayın yapan modellerinden biri
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
@@ -70,7 +69,6 @@ def chat(request: ChatRequest):
                 full_response += content
                 yield content
 
-        # Yanıt tamamlandığında hafızaya kaydet
         memories.append({"user": request.user_input, "assistant": full_response})
         save_memory(memories)
 
