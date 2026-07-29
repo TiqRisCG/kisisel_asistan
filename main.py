@@ -1,15 +1,23 @@
 import os
 import json
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from groq import Groq
 
 app = FastAPI()
 
-# 🔐 API Key artık koda gömülü değil, çevre değişkeninden okunacak:
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+# 🌐 Mobil uygulamaların ve web isteklerinin engellenmemesi için CORS izni
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 MEMORY_FILE = "memory.json"
 
